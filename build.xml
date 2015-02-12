@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<project name="IJA project Dama" default="run" basedir=".">
+
+    <description>IJA project Dama</description>
+
+    <property name="name" value="ija2013.jar"/>
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="dest" location="dest"/>
+    <property name="lib" location="lib"/>
+    <property name="doc" location="doc"/>
+    <property name="libs" value="lib/dom4j-2.0.0-ALPHA-2.jar lib/jaxen-1.1.6.jar"/>
+
+    <!-- get libraries -->
+    <path id="lib.path.ref">  	
+        <fileset dir="lib" includes="*.jar"/>  
+    </path>
+
+    <presetdef name="javac">
+        <javac includeantruntime="false" />
+    </presetdef>
+
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${dest}"/>
+        <delete dir="${doc}"/>
+    </target>
+
+    <!-- compile source codes -->
+    <target name="compile_src" depends="clean" description="Compile source code">
+        <mkdir  dir="${build}"/>
+        <javac  srcdir="${src}"
+                destdir="${build}"
+                encoding="utf-8"
+                classpathref="lib.path.ref">
+        </javac>
+    </target>
+
+    <!-- create jar archive -->    
+    <target name="jar" depends="compile_src">
+        <mkdir dir="${dest}"/>
+        <jar jarfile="${dest}/${name}" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="main.Main"/>
+                <attribute name="Class-Path" value="${libs}"/>
+            </manifest>
+        </jar>
+
+        <!-- copy necessary files to dest/lib -->
+        <mkdir dir="${dest}/lib"/>
+        <copy todir="${dest}/lib">
+            <fileset dir="${lib}" excludes="**/*.java"/>
+        </copy>
+        <mkdir dir="${dest}/examples"/>
+        <copy todir="${dest}/examples">
+            <fileset dir="examples" excludes="**/*.java"/>
+        </copy>
+        
+    </target>
+    
+    <!-- clean, compile source code and create jar and javadoc -->
+    <target name="compile" depends="jar">
+        <!-- create javadoc -->
+        <antcall target="javadoc"/>
+    </target>
+        
+    <!-- run application -->
+    <target name="run" depends="jar">
+            <java jar="${dest}/${name}" dir="${dest}" fork="true"/>
+    </target>
+    
+    <target name="javadoc">
+        <javadoc
+            sourcepath="src"
+            defaultexcludes="yes"
+            destdir="${doc}"
+            author="true"
+            version="true"
+            use="true"
+            encoding="utf-8"
+            windowtitle="IJA 2013: Hra dama" 
+            classpathref="lib.path.ref">
+            <doctitle><![CDATA[<h1>IJA 2013: Hra dama</h1>]]></doctitle>
+            <bottom><![CDATA[<i>Autori: xvesel60@stud.fit.vutbr.cz, xkubov02@stud.fit.vutbr.cz</i>]]></bottom>
+        </javadoc>
+    </target>
+
+</project>
+
